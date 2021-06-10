@@ -1,4 +1,5 @@
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
 import numpy as np
 
 class NPZSaver(object):
@@ -27,7 +28,7 @@ class BaseNet(object):
 			with tf.variable_scope(self._name):
 				if isinstance(x, list) or isinstance(x, tuple):
 					x = [self[i] for i in x]
-				elif isinstance(x, basestring):
+				elif isinstance(x, str):
 					x = self[x]
 				else:
 					x, args = self[''], (x,)+args

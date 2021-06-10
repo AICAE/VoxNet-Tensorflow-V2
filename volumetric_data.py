@@ -1,6 +1,6 @@
 import numpy as np
 import os
-from io import StringIO
+from io import StringIO, BytesIO
 import tensorflow as tf
 import random
 import zipfile
@@ -19,7 +19,7 @@ class ShapeNet40Vox30(object):
 
 			@property
 			def voxels(self):
-				fi = StringIO(self._zf.read(self._fi))
+				fi = BytesIO(self._zf.read(self._fi))
 				return np.load(fi)
 
 			@property
@@ -101,10 +101,10 @@ class ShapeNet40Vox30(object):
 		bs = bs if bs is not None else 16
 		voxs = np.zeros([bs, 32,32,32, 1], dtype=np.float32)
 		one_hots = np.zeros([bs, self.num_categories], dtype=np.float32)
-		data = self._data[self._mode]
-		next_int = self._iters[self._mode].next
-		for bi in xrange(bs):
-			v = data[next_int()]
+		data = self._data[self._mode]  #list, not a generator
+		next_int = self._iters[self._mode]
+		for bi in range(bs):
+			v = data[next(next_int)]
 			d = v.voxels.reshape([30,30,30, 1])
 			for axis in 0,1,2:
 				if rn(0,1):

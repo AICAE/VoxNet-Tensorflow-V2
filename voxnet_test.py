@@ -13,17 +13,17 @@ p['accuracy'] = tf.reduce_mean(tf.cast(p['correct_prediction'], tf.float32))
 
 num_batches = 2147483647
 batch_size = 64
+lines = open('checkpoints/accuracies.txt').readlines()
 
-checkpoint_num = int(max([map(float, l.split()) 
-	for l in open('checkpoints/accuracies.txt').readlines()], 
-	key=lambda x:x[2])[0])
+#checkpoint_num = int(max([map(float, l.split()) for l in lines], key=lambda x:x[2])[0])
+checkpoint_num = int(max([float(l.split()[0]) for l in lines]))
 
 with tf.Session() as session:
 	session.run(tf.global_variables_initializer())
 	voxnet.npz_saver.restore(session, 'checkpoints/c-{}.npz'.format(checkpoint_num))
 
 	total_accuracy = 0
-	for batch_index in xrange(num_batches):
+	for batch_index in range(num_batches):
 
 		voxs, labels = dataset.test.get_batch(batch_size)
 		feed_dict = {voxnet[0]: voxs, p['labels']: labels}
